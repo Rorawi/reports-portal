@@ -1,0 +1,116 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  font-family: "Open Sans", sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+
+.svh-65 {
+  height: calc(100svh - 65px);
+}
+
+.svh-188 {
+  height: calc(100svh - 188px);
+}
+.svh-188 {
+  height: calc(100svh - 188px);
+}
+
+
+.lg-svh-188 {
+  height: calc(100svh - 188px);
+}
+
+@media screen and (max-width: 768px) {
+  .lg-svh-188 {
+    height:calc(100svh - 116px);
+  }
+}
+
+.glass-effect {
+  /* color: white;  */
+  text-decoration: none; 
+  padding: 0.8rem 1rem; 
+  display: inline-block;
+  transition: all 0.5s ease-in; 
+  background: rgba(255, 255, 255, 0.25); 
+  box-shadow: 0 10px 25px rgba(150, 158, 184, 0.4);
+  backdrop-filter: blur(3px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+
+}
+@media screen and (min-width: 768px) {
+  .glass-effect {
+    border-radius: 10px; 
+    padding: 0.8rem 2rem; 
+  }
+}
+
+.border-radius-10 {
+  border-radius: 10px;
+}
+
+
+.dark .glass-effect {
+  background: rgba(0, 0, 0, 0.3); /* Dark translucent background */
+  border: 1px solid rgba(255, 255, 255, 0.2); /* Retains translucent border */
+  box-shadow: 0 10px 25px rgba(44, 43, 43, 0.4);
+
+}
+
+
+.banner{
+  background: url('./assets/images/white-pattern.avif');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  background-blend-mode: darken;
+  background-color: rgba(206, 225, 235, 0.399);
+}
+
+#scroll {
+  overflow-x: auto;
+  overflow-y: auto;
+}
+
+#scroll:hover::-webkit-scrollbar-thumb {
+  background-color: #d5d7d8;
+}
+
+#scroll::-webkit-scrollbar-track {
+  width: 8px;
+  border-radius: 6px;
+  background-color: transparent;
+}
+
+#scroll {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none;    /* Firefox */
+}
+
+#scroll::-webkit-scrollbar {
+  display: none;
+}
+
+#scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+  margin: 50px 0;
+  background-color: transparent;
+}
+
+#scroll::-webkit-scrollbar-thumb {
+  width: 8px;
+  border-radius: 6px;
+  background-color: transparent;
+}
