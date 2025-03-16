@@ -2,9 +2,6 @@ from pydantic import BaseModel
 from typing import Optional
 
 class Report(BaseModel):
-    assembly: str
-    district: str
-    month: str
     outreachProgramsCurrent: int
     outreachProgramsPrevious: int
     outreachProgramsVariance: int

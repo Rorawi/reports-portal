@@ -10,33 +10,66 @@ const EventsForm = () => {
     <input type="number" id="holyGhostPrayerSessions" name="holyGhostPrayerSessions" />
   </div>
   <div class="form-group">
-    <label for="baptizedInHolySpiritChildren">No. of Children Baptized in Holy Spirit</label>
-    <input type="number" id="baptizedInHolySpiritChildren" name="baptizedInHolySpiritChildren" />
-  </div>
-  <div class="form-group">
-    <label for="baptizedInHolySpiritNewConverts">No. of New Converts Baptized in Holy Spirit</label>
-    <input type="number" id="baptizedInHolySpiritNewConverts" name="baptizedInHolySpiritNewConverts" />
-  </div>
-  <div class="form-group">
-    <label for="baptizedInHolySpiritOldMembers">No. of Old Members Baptized in Holy Spirit</label>
-    <input type="number" id="baptizedInHolySpiritOldMembers" name="baptizedInHolySpiritOldMembers" />
-  </div>
-  <div class="form-group">
-    <label for="midWeekTeachingSessions">No. of Mid-Week Teaching sessions organized</label>
-    <input type="number" id="midWeekTeachingSessions" name="midWeekTeachingSessions" />
-  </div>
-  <div class="form-group">
-    <label for="avgMidWeekServiceAttendance">Average attendance at Mid-Week Service</label>
-    <input type="number" id="avgMidWeekServiceAttendance" name="avgMidWeekServiceAttendance" />
-  </div>
-  <div class="form-group">
-    <label for="fridayPrayerSessions">No. of Friday Weekly Prayer Sessions Held</label>
-    <input type="number" id="fridayPrayerSessions" name="fridayPrayerSessions" />
-  </div>
-  <div class="form-group">
-    <label for="avgFridayPrayerAttendance">Average attendance at Friday Weekly Prayer sessions</label>
-    <input type="number" id="avgFridayPrayerAttendance" name="avgFridayPrayerAttendance" />
-  </div>
+					<label for="teachingSessionsAnnual">
+						No. of Teaching sessions held on annual thematic topics
+					</label>
+					<input
+						type="number"
+						id="teachingSessionsAnnual"
+						name="teachingSessionsAnnual"
+					/>
+				</div>
+				<div class="form-group">
+					<label for="intergenerationalServices">
+						No. of intergenerational services held
+					</label>
+					<input
+						type="number"
+						id="intergenerationalServices"
+						name="intergenerationalServices"
+					/>
+				</div>
+				<div class="form-group">
+					<label for="youthMinistryAttendance">
+						Attendance at Youth Ministry Meetings
+					</label>
+					<input
+						type="number"
+						id="youthMinistryAttendance"
+						name="youthMinistryAttendance"
+					/>
+				</div>
+				<div class="form-group">
+					<label for="womenMinistryAttendance">
+						Attendance at Women Ministry Meetings
+					</label>
+					<input
+						type="number"
+						id="womenMinistryAttendance"
+						name="womenMinistryAttendance"
+					/>
+				</div>
+				<div class="form-group">
+					<label for="evangelismMinistryAttendance">
+						Attendance at Evangelism Ministry Meetings
+					</label>
+					<input
+						type="number"
+						id="evangelismMinistryAttendance"
+						name="evangelismMinistryAttendance"
+					/>
+				</div>
+				<div class="form-group">
+					<label for="pememMinistryAttendance">
+						Attendance at PEMEM Ministry Meetings
+					</label>
+					<input
+						type="number"
+						id="pememMinistryAttendance"
+						name="pememMinistryAttendance"
+					/>
+				</div>
+
 </div>
     </div>
   )

@@ -15,6 +15,13 @@ import { Bar, Line } from "react-chartjs-2";
 import { MdOutlineEventNote } from "react-icons/md";
 import AssemblyDropdown from "../components/AssemblyDropdown";
 import MonthDropdown from "../components/MonthDropdown";
+import NoReportFound from "../components/empty-states/NoReportFound";
+import ErrorState from "../components/empty-states/ErrorState";
+import LoadingState from "../components/LoadingState";
+import { LiaCrossSolid } from "react-icons/lia";
+import CustomDatePicker from "../components/CustomDatePicker";
+import dayjs from "dayjs";
+import { Box } from "@mui/material";
 
 // Register required components for Chart.js
 Chart.register(
@@ -32,6 +39,7 @@ const DashboardOverview = () => {
 	const [filteredReports, setFilteredReports] = useState([]);
 	const [selectedAssembly, setSelectedAssembly] = useState("All");
 	const [selectedMonth, setSelectedMonth] = useState("All");
+	const [selecteddate, setSelectedDate] = useState("All");
 	const chartRefs = useRef([]);
 	const [reports, setReports] = useState([]);
 	const [loading, setLoading] = useState(true);
@@ -46,7 +54,7 @@ const DashboardOverview = () => {
 			setFilteredReports(reports);
 		} else {
 			setFilteredReports(
-				reports.filter((report) => report.assembly === assembly)
+				reports.filter((report) => report.step_one.assembly === assembly)
 			);
 		}
 	};
@@ -72,10 +80,34 @@ const DashboardOverview = () => {
 		if (month === "All") {
 			setFilteredReports(reports);
 		} else {
-			setFilteredReports(reports.filter((report) => report.month === month));
+			setFilteredReports(
+				reports.filter((report) => report.step_one.month === month)
+			);
 		}
 	};
 
+	const handleDateSelect = (date) => {
+		if (date === "All") {
+		  setFilteredReports(reports);
+		  setSelectedDate(date); // Set "All" in the selected date
+		} else {
+		  const formattedDate = dayjs(date).format("YYYY-MM"); // Extract only the date
+		  setSelectedDate(formattedDate);
+	  
+		  // Log the selected date and the report date for debugging
+		  console.log("Selected Date: ", formattedDate);
+	  
+		  const filteredReports = reports.filter((report) => {
+			console.log("Report Date: ", report.step_one.date); // Log the report date
+			return report.step_one.date === formattedDate;
+		  });
+	  
+		  setFilteredReports(filteredReports);
+		}
+	  };
+	  
+
+	  
 	// Fetch reports data from the API
 	useEffect(() => {
 		const fetchReports = async () => {
@@ -102,49 +134,97 @@ const DashboardOverview = () => {
 		console.log("Reports:", reports);
 	}, [reports]);
 
-	if (loading) return <div className="text-center py-4">Loading...</div>;
+	if (loading)
+		return (
+			<div className="text-center py-4">
+				<LoadingState />
+			</div>
+		);
 	if (error)
-		return <div className="text-center py-4 text-red-500">Error: {error}</div>;
+		return (
+			<div>
+				<ErrorState error={error} />
+			</div>
+		);
 	if (reports.length === 0) {
 		return (
-			<div className="text-center text-gray-600 dark:text-gray-300">
-				No reports found.
+			<div>
+				<NoReportFound />
 			</div>
 		);
 	}
 
 	// Calculate total souls won
 	const totalSoulsWon = filteredReports.reduce(
-		(sum, report) => sum + (report.soulsWonCOPCurrent || 0),
+		(sum, report) => sum + (report.soul_winning.soulsWonCOPCurrent || 0),
 		0
 	);
 
 	// Calculate total members (example logic, adjust as needed)
 	const totalMembers = filteredReports.reduce(
-		(sum, report) => sum + (report.totalAttendanceHomeCellsMemberCurrent || 0),
+		(sum, report) =>
+			sum + (report.soul_winning.totalAttendanceHomeCellsMembersCurrent || 0),
 		0
 	);
 
 	// Calculate total events held (example logic, adjust as needed)
 	const totalEventsHeld = filteredReports.reduce(
-		(sum, report) => sum + (report.outreachProgramsCurrent || 0),
+		(sum, report) => sum + (report.soul_winning.outreachProgramsCurrent || 0),
 		0
 	);
 
-	// Prepare data for the Line chart
-	const chartData = {
-		labels: filteredReports.map((report) => report.assembly),
-		datasets: [
-			{
-				label: "Souls Won",
-				data: filteredReports.map((report) => report.soulsWonCOPCurrent),
-				borderColor: "rgba(75, 192, 192, 1)",
-				backgroundColor: "rgba(75, 192, 192, 0.2)",
-				fill: true,
-			},
-		],
-	};
+	// Calculate total baptisms held (example logic, adjust as needed)
+	const totalBaptismHeld = filteredReports.reduce(
+		(sum, report) => sum + (report.baptism.convertsBaptizedCurrent || 0),
+		0
+	);
 
+	console.log(totalBaptismHeld);
+	
+
+	const uniqueAssemblies = Array.from(
+		new Set(filteredReports.map((report) => report.step_one.assembly))
+	  );
+	  
+	  // Prepare data for the Line chart
+	  const chartData = {
+		labels: uniqueAssemblies, // Using unique assemblies as labels
+		datasets: [
+		  {
+			label: "Souls Won",
+			data: uniqueAssemblies.map((assembly) => {
+			  // For each unique assembly, sum or take the appropriate value
+			  const assemblyData = filteredReports.filter(
+				(report) => report.step_one.assembly === assembly
+			  );
+	  
+			  // Log the data for debugging
+			  console.log(`Assembly: ${assembly}`, assemblyData);
+	  
+			  // Assuming you want to sum the soulsWonCOPCurrent values for that assembly
+			  const totalSoulsWon = assemblyData.reduce(
+				(acc, report) => {
+				  // Ensure we access soulsWonCOPCurrent under soul_winning and check if it's available
+				  const soulsWon = report.soul_winning?.soulsWonCOPCurrent || 0;
+				  console.log("Current Souls Won:", soulsWon); // Log current value
+				  return acc + soulsWon; // Sum the soulsWon values
+				},
+				0
+			  );
+	  
+			  // Log the total for debugging
+			  console.log(`Total Souls Won for ${assembly}:`, totalSoulsWon);
+	  
+			  return totalSoulsWon;
+			}),
+			borderColor: "rgba(75, 192, 192, 1)",
+			backgroundColor: "rgba(75, 192, 192, 0.2)",
+			fill: true,
+		  },
+		],
+	  };
+	  
+	  
 	return (
 		<div className="p-3">
 			{/* Header */}
@@ -157,52 +237,69 @@ const DashboardOverview = () => {
 						assemblies={assemblies}
 						onSelect={handleAssemblySelect}
 					/>
-					<MonthDropdown months={months} onSelect={handleMonthSelect} />
-					<button className="px-4 py-2 bg-blue-500 dark:bg-purple-800 text-white rounded-lg transition-colors hover:bg-blue-600 dark:hover:bg-purple-700 hidden">
-						Export Report
-					</button>
+					<CustomDatePicker onDateChange={handleDateSelect} />
 				</div>
 			</div>
 
 			{/* Cards Section */}
-			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+			<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
 				{/* Souls Won Card */}
-				<div className="p-4 bg-white dark:bg-[#212121] rounded-lg shadow">
-					<div className="p-4 w-fit mb-3 rounded-lg flex justify-center items-center shadow-md cursor-pointer dark:bg-purple-800">
+				<div className="p-4 bg-white dark:bg-[#212121] rounded-2xl shadow flex items-center gap-4 h-full">
+					<div className="p-4 w-fit rounded-full flex justify-center items-center shadow-md cursor-pointer dark:bg-[#333333]">
 						<IoPersonOutline className="w-5 h-5 dark:text-white" />
 					</div>
-					<h2 className="text-sm font-medium text-gray-600 dark:text-purple-700">
-						Souls Won (+10% Bonus)
-					</h2>
-					<p className="text-2xl font-semibold dark:text-white">
-						{totalSoulsWon}
-					</p>
+					<div>
+						<h6 className="text-sm font-medium text-gray-600 dark:text-[#8d8d8d]">
+							Souls Won (+10% Bonus)
+						</h6>
+						<p className="text-xl font-semibold dark:text-white text-wrap">
+							{totalSoulsWon}
+						</p>
+					</div>
 				</div>
 
 				{/* Total Members */}
-				<div className="p-4 bg-white dark:bg-[#212121] rounded-lg shadow">
-					<div className="p-4 w-fit mb-3 rounded-lg flex justify-center items-center shadow-md cursor-pointer dark:bg-purple-800">
+				<div className="p-4 bg-white dark:bg-[#212121] rounded-2xl shadow flex items-center gap-4 h-full">
+					<div className="p-4 w-fit rounded-full flex justify-center items-center shadow-md cursor-pointer dark:bg-[#333333]">
 						<IoPersonOutline className="w-5 h-5 dark:text-white" />
 					</div>
-					<h2 className="text-sm font-medium text-gray-600 dark:text-purple-700">
-						Total Members
-					</h2>
-					<p className="text-2xl font-semibold dark:text-white">
-						{totalMembers}
-					</p>
+					<div>
+						<p className="text-sm font-medium text-gray-600 dark:text-[#8d8d8d]">
+							Total Members
+						</p>
+						<p className="text-xl font-semibold dark:text-white">
+							{totalMembers}
+						</p>
+					</div>
 				</div>
 
 				{/* Events Held */}
-				<div className="p-4 bg-white dark:bg-[#212121] rounded-lg shadow">
-					<div className="p-4 w-fit mb-3 rounded-lg flex justify-center items-center shadow-md cursor-pointer dark:bg-purple-800">
+				<div className="p-4 bg-white dark:bg-[#212121] rounded-2xl shadow flex items-center gap-4 h-full">
+					<div className="p-4 w-fit rounded-full flex justify-center items-center shadow-md cursor-pointer dark:bg-[#333333]">
 						<MdOutlineEventNote className="w-5 h-5 dark:text-white" />
 					</div>
-					<h2 className="text-sm font-medium text-gray-600 dark:text-purple-700">
-						Events Held
-					</h2>
-					<p className="text-2xl font-semibold dark:text-white">
-						{totalEventsHeld}
-					</p>
+					<div>
+						<p className="text-sm font-medium text-gray-600 dark:text-[#8d8d8d]">
+							Events Held
+						</p>
+						<p className="text-xl font-semibold dark:text-white">
+							{totalEventsHeld}
+						</p>
+					</div>
+				</div>
+				{/* Events Held */}
+				<div className="p-4 bg-white dark:bg-[#212121] rounded-2xl shadow flex items-center gap-4 h-full">
+					<div className="p-4 w-fit rounded-full flex justify-center items-center shadow-md cursor-pointer dark:bg-[#333333]">
+						<LiaCrossSolid className="w-5 h-5 dark:text-white" />
+					</div>
+					<div>
+						<p className="text-sm font-medium text-gray-600 dark:text-[#8d8d8d]">
+							Baptism
+						</p>
+						<p className="text-xl font-semibold dark:text-white">
+							{totalBaptismHeld}
+						</p>
+					</div>
 				</div>
 			</div>
 
@@ -214,7 +311,7 @@ const DashboardOverview = () => {
 				<h3 className="text-md font-semibold mb-2 dark:text-white">
 					Attendance
 				</h3>
-				<Line
+				<Bar
 					ref={(el) => (chartRefs.current[0] = el?.chartInstance)}
 					data={chartData}
 					options={{ responsive: true }}

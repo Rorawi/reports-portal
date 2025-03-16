@@ -3,11 +3,6 @@ import React, { useState } from "react";
 const SoulWinningForm = ({ formData, handleChange }) => {
   const [errors, setErrors] = useState({});
 
-  const calculateVariance = (current, previous) => {
-    return current && previous ? current - previous : "";
-  };
-
-  // Map field names (backend) to user-friendly labels (frontend)
   const fieldLabels = {
     outreachPrograms: "Outreach Programs",
     soulsWonCOP: "Souls Won (COP Members)",
@@ -46,9 +41,9 @@ const SoulWinningForm = ({ formData, handleChange }) => {
                   <input
                     type="number"
                     min="0"
-                    name={currentField}
-                    value={formData[currentField] || ""}
-                    onChange={handleChange}
+                    name={`soul_winning.${currentField}`}
+                    value={formData.soul_winning[currentField] || ""}
+                    onChange={handleChange}  // Using the prop passed to the component
                     className={`w-full px-4 py-2 border rounded-md dark:bg-transparent dark:border-gray-600 dark:text-white ${
                       errors[currentField] ? "border-red-500" : ""
                     }`}
@@ -67,9 +62,9 @@ const SoulWinningForm = ({ formData, handleChange }) => {
                   </label>
                   <input
                     type="number"
-                    name={previousField}
-                    value={formData[previousField] || ""}
-                    onChange={handleChange}
+                    name={`soul_winning.${previousField}`}
+                    value={formData.soul_winning[previousField] || ""}
+                    onChange={handleChange}  // Using the prop passed to the component
                     className={`w-full px-4 py-2 border rounded-md dark:bg-transparent dark:border-gray-600 dark:text-white ${
                       errors[previousField] ? "border-red-500" : ""
                     }`}
@@ -88,8 +83,8 @@ const SoulWinningForm = ({ formData, handleChange }) => {
                   </label>
                   <input
                     type="number"
-                    name={varianceField}
-                    value={formData[varianceField] || ""}
+                    name={`soul_winning.${varianceField}`}
+                    value={formData.soul_winning[varianceField] || ""}
                     readOnly
                     className="w-full px-4 py-2 border rounded-md bg-gray-100 dark:bg-gray-800 dark:border-gray-600 dark:text-white"
                   />

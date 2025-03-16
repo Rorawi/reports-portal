@@ -18,8 +18,12 @@ html {
 .svh-65 {
   height: calc(100svh - 65px);
 }
+
 .svh-188 {
   height: calc(100svh - 188px);
+}
+.svh-143 {
+  height: calc(100svh - 143px);
 }
 
 .glass-effect {
@@ -37,7 +41,7 @@ html {
 
 
 .dark .glass-effect {
-  background: rgba(0, 0, 0, 0.3); /* Dark translucent background */
+  background-color: #171717 !important; /* Dark translucent background */
   border: 1px solid rgba(255, 255, 255, 0.2); /* Retains translucent border */
   box-shadow: 0 10px 25px rgba(44, 43, 43, 0.4);
 

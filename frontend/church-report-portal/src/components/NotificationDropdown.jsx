@@ -37,7 +37,7 @@ const NotificationDropdown = () => {
       {/* Notification Icon */}
       <button
         ref={iconRef}
-        className="p-2 rounded-full flex justify-center items-center shadow-md cursor-pointer dark:bg-purple-800"
+        className="p-2 rounded-full flex justify-center items-center shadow-md cursor-pointer dark:bg-[#333333]"
         onClick={toggleDropdown}
       >
         <IoMdNotificationsOutline className="w-5 h-5 dark:text-white" />

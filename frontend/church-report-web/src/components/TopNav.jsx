@@ -4,6 +4,8 @@ import { IoPersonOutline } from "react-icons/io5";
 import { RxHamburgerMenu } from "react-icons/rx";
 import ThemeToggle from "./ThemeToggle";
 import NotificationDropdown from "./NotificationDropdown";
+import { Link } from "react-router-dom";
+import { TbReportSearch } from "react-icons/tb";
 
 const TopNav = () => {
 	return (
@@ -13,20 +15,33 @@ const TopNav = () => {
 					<div className="p-2 rounded-full justify-center items-center shadow-md cursor-pointer bg-blue-600 hidden">
 						<RxHamburgerMenu className="w-5 h-5 text-white" />
 					</div>
-					<h4 className="text-xl font-semibold dark:text-white">
-						Report
-					</h4>
-					
+					<Link to='/' className="flex items-center gap-2 cursor-pointer">
+						<div className="p-2 rounded-full flex justify-center items-center shadow-md cursor-pointer dark:bg-[#333333]">
+							<TbReportSearch className="w-5 h-5 dark:text-white" />
+						</div>
+						<span className="font-bold dark:text-white hidden lg:block">
+							Church Report Form
+						</span>
+					</Link>
 				</div>
 
 				<div>
+					<div className="flex justify-end items-center gap-6">
 					<div className="flex items-center gap-3">
+
+						<Link to={"/reportlists"} className="font-semibold dark:text-white">
+							My Reports
+						</Link>
+						</div>
+						<div className="flex items-center gap-3">
+							
 						<NotificationDropdown />
 						<div className="p-2 rounded-full flex justify-center items-center shadow-md cursor-pointer bg-blue-600">
 							<IoPersonOutline className="w-5 h-5 text-white" />
 						</div>
 
 						<ThemeToggle />
+						</div>
 					</div>
 				</div>
 

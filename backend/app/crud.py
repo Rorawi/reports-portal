@@ -1,7 +1,9 @@
 from sqlalchemy.orm import Session
-from . import models, schemas
 
-def create_report(db: Session, report: schemas.ReportCreate):
+from .schemas import soul_winning_schema
+from .models import models
+
+def create_report(db: Session, report: soul_winning_schema.ReportCreate):
     db_report = models.Report(
         month=report.month,
         outreach_programs_current=report.outreach_programs_current,

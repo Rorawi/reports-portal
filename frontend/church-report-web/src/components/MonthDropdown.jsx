@@ -45,7 +45,7 @@ const MonthDropdown = ({ value, onChange }) => {
   }, []);
 
   return (
-    <div className="relative md:w-44">
+    <div className="relative">
       {/* Dropdown Button */}
 <button
   type="button" // Ensure this is not a submit button
