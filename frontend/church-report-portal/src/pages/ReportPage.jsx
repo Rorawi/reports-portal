@@ -62,17 +62,24 @@ const ReportPage = () => {
 					throw new Error(`Error: ${response.status}`);
 				}
 				const data = await response.json();
-				setReports(data);
-				setFilteredReports(data); // Initialize filteredReports with all reports
+				
+				// Convert the object into an array of reports with a year key
+				const formattedReports = Object.entries(data).flatMap(([year, reports]) =>
+					reports.map(report => ({ ...report, year })) // Add year to each report
+				);
+	
+				setReports(formattedReports);
+				setFilteredReports(formattedReports); // Initialize with all reports
 			} catch (error) {
 				setError(error.message);
 			} finally {
 				setLoading(false);
 			}
 		};
-
+	
 		fetchReports();
 	}, []);
+	
 
 	// Log reports after state update
 	useEffect(() => {
@@ -115,28 +122,23 @@ const ReportPage = () => {
 			</div>
 
 			{/* Year Section */}
-			{[
-				...new Set(
-					reports.map((report) => dayjs(report.step_one.date).format("YYYY"))
-				),
-			].map((year) => (
-				<div key={year} className="mb-4">
-					<h2 className="text-xl font-semibold mb-4 dark:text-white">
-						Year: {year}
-					</h2>
-					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xxl:grid-cols-4 gap-4 mb-6">
-					{reports
-						.filter(
-							(report) => dayjs(report.step_one.date).format("YYYY") === year
-						)
-						.map((report) => (
-							<div key={report.id}>
-								<ReportCard report={report} />
-								</div>
-						))}
-							</div>
-				</div>
-			))}
+			{[...new Set(filteredReports.map((report) => report.year))].map((year) => (
+	<div key={year} className="mb-4">
+		<h2 className="text-xl font-semibold mb-4 dark:text-white">
+			Year: {year}
+		</h2>
+		<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 xxl:grid-cols-4 gap-4 mb-6">
+			{filteredReports
+				.filter((report) => report.year === year) // Now using the added year property
+				.map((report) => (
+					<div key={report.id}>
+						<ReportCard report={report} />
+					</div>
+				))}
+		</div>
+	</div>
+))}
+
 		</div>
 	);
 };

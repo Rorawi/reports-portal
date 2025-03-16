@@ -39,33 +39,37 @@ const ReportDetail = () => {
 
 	console.log(report);
 
-	const approveReport = async () => {
-		try {
-			setIsApproved(true);
-			console.log("Report Approved");
+const approveReport = async () => {
+    try {
+        if (!report || !report.id) {
+            throw new Error("Report data is missing or invalid.");
+        }
+
+        const response = await fetch(`http://localhost:8000/api/reports/${report.id}/approve`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ isApproved: true }),
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to update report");
+        }
+
+        const updatedReport = await response.json();
+        console.log("Updated Report:", updatedReport);
+
+        // Update state
+        setIsApproved(true);
+        setReport((prevReport) => ({
+            ...prevReport,
+            isApproved: true,
+        }));
+    } catch (error) {
+        console.error("Error approving report:", error);
+    }
+};
+
 	
-			// Send API request to update the report
-			const response = await fetch(`http://localhost:8000/reports/${report.id}/approve`, {
-				method: "PATCH", // You can also use "PUT"
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({ isApproved: true }),
-			});
-	
-			if (!response.ok) {
-				throw new Error("Failed to update report");
-			}
-	
-			const data = await response.json();
-			console.log("Updated Report:", data);
-	
-			// Update report state after successful API call
-			report.isApproved = true;
-		} catch (error) {
-			console.error("Error approving report:", error);
-		}
-	};
 	
 	
 	const getDateParts = (dateString) => {

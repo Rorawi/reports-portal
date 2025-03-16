@@ -3,7 +3,9 @@ from pydantic import BaseModel
 from datetime import datetime
 from typing import List
 from fastapi.middleware.cors import CORSMiddleware
-from .schemas.report_schema import Report,ReportUpdate
+from .schemas.report_schema import Report
+from collections import defaultdict
+
 
 app = FastAPI()
 
@@ -52,24 +54,42 @@ fake_reports_db = []
 #             raise HTTPException(status_code=400, detail="Report is not marked as draft, please use the submit endpoint.")
 #     except Exception as e:
 #         raise HTTPException(status_code=400, detail=str(e))
+
 @app.post("/api/reports")
 async def submit_report(report: Report, request: Request):
     raw_body = await request.json()
     print("Received Payload:", raw_body)
 
     try:
-        # Save the entire report object
-        saved_report = report.dict()  # Convert Pydantic model to a dictionary
+        saved_report = report.model_dump()  # Convert Pydantic model to a dictionary
+        saved_report["created_at"] = datetime.utcnow().isoformat()  # Add timestamp
+
         fake_reports_db.append(saved_report)
         return {"message": "Report submitted successfully", "data": saved_report}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
+
 @app.get("/api/reports")
 async def get_reports():
-    return fake_reports_db
+    # Group reports by year
+    reports_by_year = defaultdict(list)
     
+    for report in fake_reports_db:
+        year = datetime.fromisoformat(report["created_at"]).year
+        reports_by_year[year].append(report)
     
+    # Sort years from newest to oldest (e.g., 2025 -> 2024)
+    sorted_years = sorted(reports_by_year.keys(), reverse=True)
+    
+    # Sort reports within each year by `created_at` (newest first)
+    sorted_reports = {
+        year: sorted(reports_by_year[year], key=lambda x: datetime.fromisoformat(x["created_at"]), reverse=True)
+        for year in sorted_years
+    }
+    
+    return sorted_reports
+
 @app.get("/api/reports/{report_id}")
 async def get_report(report_id: str):
     for report in fake_reports_db:
@@ -77,18 +97,39 @@ async def get_report(report_id: str):
             return report
     raise HTTPException(status_code=404, detail="Report not found")
 
-# @app.get("/api/reports/drafts")
-# async def get_drafts():
-#     return fake_drafts_db
-
-@app.patch("/reports/{report_id}/approve")
-async def approve_report(report_id: str, report_update: ReportUpdate):
+@app.patch("/api/reports/{report_id}/approve")
+async def approve_report(report_id: str):
     for report in fake_reports_db:
-        if report["id"] == report_id:  # Ensure it's comparing strings
-            report["isApproved"] = report_update.isApproved
+        if report["id"] == report_id:
+            report["isApproved"] = True  # ✅ Updating directly in the database
+            print(f"Updated Report: {report}")  # Debugging
+
             return {"message": "Report approved", "report": report}
 
     raise HTTPException(status_code=404, detail="Report not found")
+
+@app.patch("/api/reports/{report_id}/approve")
+async def approve_report(report_id: str, report_update: dict):
+    print(f"Received Payload: {report_update}")  # Debugging
+
+
+
+@app.delete("/api/reports/{report_id}")
+async def delete_report(report_id: str):
+    global fake_reports_db
+    fake_reports_db = [report for report in fake_reports_db if report["id"] != report_id]
+    return {"message": "Report deleted successfully"}
+
+@app.put("/api/reports/{report_id}")
+async def update_report(report_id: str, updated_report: Report):
+    for index, report in enumerate(fake_reports_db):
+        if report["id"] == report_id:
+            fake_reports_db[index] = updated_report.dict()
+            return {"message": "Report updated successfully", "data": updated_report}
+
+    raise HTTPException(status_code=404, detail="Report not found")
+
+
 
 @app.get("/api/debug/reports")
 async def debug_reports():

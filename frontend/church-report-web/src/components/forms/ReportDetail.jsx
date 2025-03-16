@@ -70,6 +70,38 @@ const ReportDetail = () => {
 		}
 	};
 
+	const handleDelete = async (reportId) => {
+		try {
+		  const response = await fetch(`http://localhost:8000/api/reports/${reportId}`, {
+			method: "DELETE",
+		  });
+	  
+		  if (!response.ok) throw new Error("Failed to delete report");
+	  
+		  setReport(report.filter(report => report.id !== reportId)); // Update UI
+		} catch (error) {
+		  console.error("Error deleting report:", error);
+		}
+	  };
+
+	  const handleEdit = async (reportId, updatedReportData) => {
+		try {
+		  const response = await fetch(`http://localhost:8000/api/reports/${reportId}`, {
+			method: "PUT",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify(updatedReportData),
+		  });
+	  
+		  if (!response.ok) throw new Error("Failed to update report");
+	  
+		  const updatedReport = await response.json();
+		  setReport(report.map(report => report.id === reportId ? updatedReport.data : report));
+		} catch (error) {
+		  console.error("Error updating report:", error);
+		}
+	  };
+	  
+
 	const getDateParts = (dateString) => {
 		const date = dayjs(dateString);
 		return {
@@ -290,20 +322,20 @@ const ReportDetail = () => {
 						</div>
                         <div className="flex justify-end gap-4 mb-3">
 					{!report.isApproved && (
-                        <div
+                        <button
 						className="p-3 w-fit rounded-md flex-shrink-0 flex justify-center items-center gap-1 shadow-md cursor-pointer dark:bg-[#333333] dark:text-white"
 						title="Download Report"
 					>
 						<MdOutlineEdit className="w-4 h-4 dark:text-white" />
 						<span className="text-xs">Edit</span>
-					</div>
+					</button>
                     )}
                     </div>
 				</div>
 
 				{reportData.map((data, index) => {
 					return (
-						<>
+						
 							<div
 								className="p-4 bg-white dark:bg-[#333333] rounded-xl shadow mb-8"
 								key={index}
@@ -366,7 +398,6 @@ const ReportDetail = () => {
 									</div>
 								</div>
 							</div>
-						</>
 					);
 				})}
 
@@ -383,6 +414,7 @@ const ReportDetail = () => {
 						<div
 							className="p-3 w-fit text-xs rounded-md flex-shrink-0 flex justify-center items-center gap-1 shadow-md cursor-pointer bg-[#9b201a] border border-[#9b1a23] dark:border-[#ff5a5a] dark:bg-[#312222] text-[#fff]"
 							title="Download Report"
+							onClick={() => handleDelete(report.id)}
 						>
 							<FiTrash2 className="w-4 h-4 dark:text-white" />
 							<span className="text-xs font-medium"> Delete </span>

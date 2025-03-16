@@ -36,6 +36,7 @@ Chart.register(
 );
 
 const DashboardOverview = () => {
+
 	const [filteredReports, setFilteredReports] = useState([]);
 	const [selectedAssembly, setSelectedAssembly] = useState("All");
 	const [selectedMonth, setSelectedMonth] = useState("All");
@@ -75,14 +76,22 @@ const DashboardOverview = () => {
 		"December",
 	];
 
+	useEffect(() => {
+		console.log("Fetched Reports:", reports);
+	}, [reports]);
+	
+
 	const handleMonthSelect = (month) => {
 		setSelectedMonth(month);
 		if (month === "All") {
 			setFilteredReports(reports);
 		} else {
 			setFilteredReports(
-				reports.filter((report) => report.step_one.month === month)
-			);
+				reports.filter((report) => {
+					console.log("Report Step One:", report.step_one);
+					return report.step_one.date?.includes(month);
+				})
+							);
 		}
 	};
 
@@ -117,14 +126,24 @@ const DashboardOverview = () => {
 					throw new Error(`Error: ${response.status}`);
 				}
 				const data = await response.json();
-				setReports(data);
-				setFilteredReports(data); // Initialize filteredReports with all reports
+				console.log("API Response:", data);
+		
+				// Check if data has the expected year key (e.g., "2025")
+				const yearKey = Object.keys(data)[0]; 
+				if (yearKey && Array.isArray(data[yearKey])) {
+					setReports(data[yearKey]); // Set only the array part
+					setFilteredReports(data[yearKey]); 
+				} else {
+					setReports([]); // Default to an empty array if no data
+					setFilteredReports([]);
+				}
 			} catch (error) {
 				setError(error.message);
 			} finally {
 				setLoading(false);
 			}
 		};
+		
 
 		fetchReports();
 	}, []);
@@ -232,6 +251,7 @@ const DashboardOverview = () => {
 				<h1 className="text-2xl font-semibold mb-2 md:mb-0 dark:text-white">
 					Overview
 				</h1>
+				
 				<div className="flex flex-col md:flex-row md:items-center gap-4">
 					<AssemblyDropdown
 						assemblies={assemblies}
